@@ -85,11 +85,6 @@ if not os.path.isfile("bma_config.json"):
         elif not selfsetup:
             exit(0)
 
-
-
-
-quit()
-
 #vvv=====CONFIG=====vvv
 
 global config
