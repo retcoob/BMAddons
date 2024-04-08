@@ -49,7 +49,7 @@ I haven't gotten any questions yet.
 - **Hide Username Option:** Prioritize privacy with an option to conceal your username.
 
 ![320315587-5c30109a-aacd-4d0a-92c2-5fb7488990b7](https://github.com/retcoob/BMAddons/assets/166263898/aeea5bfc-e59a-421a-8d6f-3010ab52d0ea)\
-![320315609-cc470c94-e9e4-48db-afb0-3665ea4812d0](https://github.com/retcoob/BMAddons/assets/166263898/440ca379-0392-4cc3-b124-57b79c9b0671)\
+![320315609-cc470c94-e9e4-48db-afb0-3665ea4812d0](https://github.com/retcoob/BMAddons/assets/166263898/440ca379-0392-4cc3-b124-57b79c9b0671)
 ![320315671-61a9efff-118c-4cd4-aede-a15876243790](https://github.com/retcoob/BMAddons/assets/166263898/7064d10c-3dca-486f-bd84-7016fe0d19aa)\
 ![320315713-36c85ffa-2b89-487c-88bf-5b0c1e1693bb](https://github.com/retcoob/BMAddons/assets/166263898/46dec70d-9e6b-41f7-9358-78767043defa)
 
