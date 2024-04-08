@@ -7,6 +7,7 @@
         "bazaarUpdateTime": 120,
         "enableLogging": true,
         "hiddenUsername": false,
+        "noOutputTimeout": 300
     },
     "security":{
         "whitelistedIPs": ["127.0.0.1"],

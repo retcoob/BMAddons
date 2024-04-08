@@ -56,6 +56,7 @@ startTime = int(time.time())
 
 lastFailsafeTrigger = None
 lastEyeTimestamp = None
+lastRecievedMessage = None
 totalEyes = 0
 eyePrice = 0
 
@@ -68,6 +69,7 @@ coinsPH = 0
 
 config_enableLogging = config['general']['enableLogging']
 config_hiddenUsername = config['general']['hiddenUsername']
+config_noOutputTimeout = config['general']['noOutputTimeout']
 
 pingID = config['pings']['pingID']
 ping_OnMention = config['pings']['pingOnMention']
@@ -159,8 +161,10 @@ def sendInput(process, input):
 def processOutput(process, output):
     global lastFailsafeTrigger
     global latestFailsafeTriggers
+    global noOutputTimeout
     print("[STDOUT]", output)
-    processed_output = rmAnsi(output)
+    noOutputTimeout = getTime()
+    #processed_output = rmAnsi(output)
     addLine(output)
     if "Out of sync" in output:
         sendWebhook("Sync Detection", f"Out of Sync.", 16277083)
@@ -187,7 +191,20 @@ def readSubprocess(process):
         output = process.stdout.readline().decode().strip()
         if output:
             threading.Thread(target=processOutput, args=(process, output)).start()
-        time.sleep(0.01)
+        if noOutputTimeout > config_noOutputTimeout:
+            try:
+                killProcess(process.pid)
+            except:
+                pass
+            try:
+                process.kill()
+            except:
+                pass
+            try:
+                process.terminate()
+            except:
+                pass
+        time.sleep(0.03)
 
 def sendUserInput(process):
     while True:
