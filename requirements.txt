@@ -1,5 +1,5 @@
-"discord.py"
-"python-socketio[client]"
-"psutil"
-"requests"
-"flask"
+discord.py
+python-socketio[client]
+psutil
+requests
+flask
