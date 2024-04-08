@@ -3,3 +3,5 @@ python-socketio[client]
 psutil
 requests
 flask
+google-generativeai
+InquirerPy
