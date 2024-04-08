@@ -153,6 +153,7 @@ def processFailsafeList():
 
 def addFailsafe(message):
     global lastFailsafeTrigger
+    global latestFailsafeTriggers
     lastFailsafeTrigger = getTime()
     if len(latestFailsafeTriggers) > 4:
         del latestFailsafeTriggers[0]
