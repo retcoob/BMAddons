@@ -12,9 +12,54 @@ import requests
 from unicodedata import normalize
 import psutil
 import json
+import os
 from urllib.parse import unquote, quote_plus
 
 init(convert=True)
+
+default_config = """{
+    "general":{
+        "statusUpdate": "",
+        "statusUpdateDelay": 5,
+        "webhookURL": "",
+        "runCommand": "./binmaster-slayer-linux",
+        "bazaarUpdateTime": 120,
+        "enableLogging": true,
+        "hiddenUsername": false,
+        "noOutputTimeout": 300
+    },
+    "security":{
+        "whitelistedIPs": ["127.0.0.1"],
+        "flaskPort": 8000,
+        "socketIOPort": 1550,
+        "password": "testing123"
+    },
+    "pings": {
+        "pingID": 123456789,
+        "pingOnMention": false,
+        "pingOnAccuse": false,
+        "pingOnFollow": false,
+        "pingOnSpectating": false,
+        "pingOnStaffCheck": false
+    },
+    "failsafe": {
+        "OnMention": true,
+        "OnAccuse": true,
+        "OnFollow": false,
+        "OnSpectating": false,
+        "OnStaffCheck": false,
+        "OnFollowTime": 60,
+        "OnSpectateTime": 60
+    }
+}"""
+
+if not os.path.isfile("bma_config.json"):
+    print("[CONFIG] Config was not found.")
+    with open("bma_config.json", "w+") as f:
+        f.write(default_config)
+    print("[CONFIG] A config file has been created.")
+
+#vvv=====CONFIG=====vvv
 
 global config
 try:
@@ -25,22 +70,6 @@ try:
 except Exception as e:
     print("[config] error:", str(e))
     exit()
-
-#vvv=====CONFIG=====vvv
-
-def loadConfig():
-    global config
-    try:
-        with open('bma_config.json', 'r') as f:
-            config = json.load(f)
-            #print("[config]", config)
-            return True
-    except Exception as e:
-        print("[config]", str(e))
-
-config_thread = threading.Thread(target=loadConfig)
-config_thread.daemon = True
-config_thread.start()
 
 #vvv=====VARIABLES=====vvv
 
