@@ -1,0 +1,34 @@
+{
+    "general":{
+        "statusUpdate": "",
+        "statusUpdateDelay": 5,
+        "webhookURL": "",
+        "runCommand": "./binmaster-slayer-linux",
+        "bazaarUpdateTime": 120,
+        "enableLogging": true,
+        "hiddenUsername": false,
+    },
+    "security":{
+        "whitelistedIPs": ["127.0.0.1"],
+        "flaskPort": 8000,
+        "socketIOPort": 1550,
+        "password": "testing123"
+    },
+    "pings": {
+        "pingID": 123456789,
+        "pingOnMention": false,
+        "pingOnAccuse": false,
+        "pingOnFollow": false,
+        "pingOnSpectating": false,
+        "pingOnStaffCheck": false
+    },
+    "failsafe": {
+        "OnMention": true,
+        "OnAccuse": true,
+        "OnFollow": false,
+        "OnSpectating": false,
+        "OnStaffCheck": false,
+        "OnFollowTime": 60,
+        "OnSpectateTime": 60
+    }
+}
