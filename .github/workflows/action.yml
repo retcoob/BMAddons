@@ -1,7 +1,4 @@
-on: 
-  push:
-    tags:
-      - 'build'
+on: push
 jobs:
   build:
     strategy:
