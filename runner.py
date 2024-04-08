@@ -15,6 +15,7 @@ import psutil
 import json
 import os
 from urllib.parse import unquote, quote_plus
+from InquirerPy import inquirer
 
 init(convert=True)
 
@@ -55,10 +56,39 @@ default_config = """{
 }"""
 
 if not os.path.isfile("bma_config.json"):
-    print("[CONFIG] Config was not found.")
-    with open("bma_config.json", "w+") as f:
-        f.write(default_config)
-    print("[CONFIG] A config file has been created.")
+    with open("bma_config.json", "r+") as f:
+        currentConfig = json.loads(default_config)
+        selfsetup = inquirer.confirm(message="No config file detected! Would you like to run self-setup?",).execute()
+        print(selfsetup)
+        if selfsetup:
+            webhookStatusUpdate = inquirer.text(message="Please enter the webhook you would like to use for status updates:", ).execute()
+            # https://canary.discord.com/api/webhooks/1150165285899346011/ijWVW6mld-be6oextee54XTRZy1smRjtjWW64WTofQ0dHsCmSrWrQHS3Bnd5l0WPostD
+            messageID = requests.post(webhookStatusUpdate, json={'content':'This is a test from BMAddons.','embeds':None,'attachments': []}, params={'wait': 'true'}).json()['id']
+            currentConfig['general']['statusUpdate'] = webhookStatusUpdate + "/messages/" + messageID
+            requests.patch(webhookStatusUpdate + "/messages/" + messageID, json={'content':'This is a test from BMAddons.','embeds':None,'attachments': []}).json()
+
+            webhookNormal = inquirer.text(message="Please enter the webhook you would like to use for normal webhooks:", ).execute()
+            currentConfig['general']['webhookURL'] = webhookNormal
+            currentConfig['general']['runCommand'] = inquirer.text(message="Enter the command you use to run BinMaster:", ).execute()
+            currentConfig['security']['flaskPort'] = inquirer.number(message="Enter your Flask Port:", ).execute()
+            currentConfig['security']['socketIOPort'] = inquirer.number(message="Enter your 'webpage_port' (this is found in your BinMaster config!):", ).execute()
+            flaskURL = currentConfig['security']['flaskPort']
+            inquirer.confirm(message=f'Have you changed webhook_url in your BinMaster config to "http://127.0.0.1:{flaskURL}/webhook"?', ).execute()
+            currentConfig['security']['password'] = inquirer.secret(message="Create a password:", ).execute()
+            currentConfig['pings']['pingID'] = inquirer.number(message="Enter your Discord ID:", ).execute()
+            
+            json.dump(currentConfig, f, indent=4)
+
+            inquirer.select(message="The bare minimum required to config is completed. Please read 'bma_config.json' to adjust 'pings' and 'failsafe'", choices=['Exit']).execute()
+            exit(0)
+
+        elif not selfsetup:
+            exit(0)
+
+
+
+
+quit()
 
 #vvv=====CONFIG=====vvv
 
