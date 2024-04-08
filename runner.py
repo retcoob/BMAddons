@@ -16,19 +16,21 @@ import json
 import os
 from urllib.parse import unquote, quote_plus
 from InquirerPy import inquirer
+import google.generativeai as genai
 
 init(convert=True)
 
-default_config = """{
+default_config = {
     "general":{
         "statusUpdate": "",
         "statusUpdateDelay": 5,
         "webhookURL": "",
         "runCommand": "./binmaster-slayer-linux",
         "bazaarUpdateTime": 120,
-        "enableLogging": true,
-        "hiddenUsername": false,
-        "noOutputTimeout": 300
+        "enableLogging": True,
+        "hiddenUsername": False,
+        "noOutputTimeout": 300,
+        "restartMessages": ["client timed out after 30000 milliseconds", "Possible stall detected"]
     },
     "security":{
         "whitelistedIPs": ["127.0.0.1"],
@@ -38,31 +40,44 @@ default_config = """{
     },
     "pings": {
         "pingID": 123456789,
-        "pingOnMention": false,
-        "pingOnAccuse": false,
-        "pingOnFollow": false,
-        "pingOnSpectating": false,
-        "pingOnStaffCheck": false
+        "pingOnMention": False,
+        "pingOnAccuse": False,
+        "pingOnFollow": False,
+        "pingOnSpectating": False,
+        "pingOnStaffCheck": False
     },
     "failsafe": {
-        "OnMention": true,
-        "OnAccuse": true,
-        "OnFollow": false,
-        "OnSpectating": false,
-        "OnStaffCheck": false,
+        "OnMention": True,
+        "OnAccuse": True,
+        "OnFollow": False,
+        "OnSpectating": False,
+        "OnStaffCheck": False,
         "OnFollowTime": 60,
         "OnSpectateTime": 60
+    },
+    "aiRespond": {
+        "isEnabled": False,
+        "apiKey": "",
+        "OnMention": True,
+        "OnAccuse": True,
+        "prompt": "",
+        "timeBeforePause": 4,
+        "timeBeforeResume": 2,
+        "typingWPM": 50,
+        "maxResponses": 5,
+        "switchAfterRespond": True,
+        "ignoreAfterRespond": True,
+        "chatTimeout": 30
     }
-}"""
+}
 
 if not os.path.isfile("bma_config.json"):
-    with open("bma_config.json", "r+") as f:
+    with open("bma_config.json", "w+") as f:
         currentConfig = json.loads(default_config)
         selfsetup = inquirer.confirm(message="No config file detected! Would you like to run self-setup?",).execute()
         print(selfsetup)
         if selfsetup:
             webhookStatusUpdate = inquirer.text(message="Please enter the webhook you would like to use for status updates:", ).execute()
-            # https://canary.discord.com/api/webhooks/1150165285899346011/ijWVW6mld-be6oextee54XTRZy1smRjtjWW64WTofQ0dHsCmSrWrQHS3Bnd5l0WPostD
             messageID = requests.post(webhookStatusUpdate, json={'content':'This is a test from BMAddons.','embeds':None,'attachments': []}, params={'wait': 'true'}).json()['id']
             currentConfig['general']['statusUpdate'] = webhookStatusUpdate + "/messages/" + messageID
             requests.patch(webhookStatusUpdate + "/messages/" + messageID, json={'content':'This is a test from BMAddons.','embeds':None,'attachments': []}).json()
@@ -113,9 +128,10 @@ lastRecievedMessage = None
 totalEyes = 0
 eyePrice = 0
 
-errorMessages = ["client timed out after 30000 milliseconds", "Possible stall detected"]
+errorMessages = config['general']['restartMessages']
 isRunning = True
 offlineSince = None
+latestOutput = int(time.time())
 
 eyesPH = 0
 coinsPH = 0
@@ -136,9 +152,29 @@ failsafe_OnAccuse = config['failsafe']['OnAccuse']
 failsafe_OnFollow = config['failsafe']['OnFollow']
 failsafe_OnSpectating = config['failsafe']['OnSpectating']
 failsafe_OnStaffCheck = config['failsafe']['OnStaffCheck']
-
 failsafe_OnFollowTime = config['failsafe']['OnFollowTime']
 failsafe_OnSpectateTime = config['failsafe']['OnSpectateTime']
+
+currentChat = None
+accusingPlayer = None
+messageHistory = []
+lastChat = None
+
+aiRespond_isEnabled = config['aiRespond']['isEnabled']
+aiRespond_apiKey = config['aiRespond']['apiKey']
+aiRespond_OnAccuse = config['aiRespond']['OnAccuse']
+aiRespond_Prompt = config['aiRespond']['prompt']
+aiRespond_timeBeforePause = int(config['aiRespond']['timeBeforePause'])
+aiRespond_timeBeforeResume = int(config['aiRespond']['timeBeforeResume'])
+aiRespond_typingWPM = int(config['aiRespond']['typingWPM'])
+aiRespond_maxResponses = int(config['aiRespond']['maxResponses'])
+aiRespond_switchAfterRespond = config['aiRespond']['switchAfterRespond']
+aiRespond_ignoreAfterRespond = config['aiRespond']['ignoreAfterRespond']
+aiRespond_chatTimeout = config['aiRespond']['chatTimeout']
+
+print(aiRespond_isEnabled)
+
+aiRespond_cps = 60/(aiRespond_typingWPM*12)
 
 #vvv=====FUNCTION=====vvv
 
@@ -177,6 +213,11 @@ def sendWebhook(title, description, color):
     json_data = {'content': content,'embeds': [{'title': str(title),'description': str(description+timestampdesc),'color': int(color),},],'attachments': []}
     requests.post(config['general']['webhookURL'],params=params,json=json_data,)
 
+def airespond_webhook(content):
+    params = {'wait': 'false'}
+    json_data = {'content': content,'embeds': None,'attachments': []}
+    requests.post(config['general']['webhookURL'],params=params,json=json_data,)
+
 def getTime():
     return int(time.time())
 
@@ -205,6 +246,51 @@ def convertTime(seconds):
      
     return "%d:%02d:%02d" % (hour, minutes, seconds)
 
+def generateChat():
+    global aiRespond_apiKey
+
+    genai.configure(api_key=aiRespond_apiKey)
+
+    prompt = str(aiRespond_Prompt).replace("[username]", latestSocket_playerInfo['username'])
+
+    history = [
+    {
+        "role":"user",
+        "parts":[
+            {
+                "text":f"[SYSTEM]: {prompt} Respond with 'Understood' if you understand the assignment."
+            }
+        ]
+    },
+    {
+        "role":"model",
+        "parts":[
+            {
+                "text":"Understood."
+            }
+        ]
+    },
+    ]
+    generation_config = {
+        "temperature": 0.7,
+        "top_p": 1,
+        "top_k": 1,
+        "max_output_tokens": 4096,
+    }
+
+    safety_settings = {
+        "HARM_CATEGORY_HARASSMENT": "BLOCK_NONE",
+        "HARM_CATEGORY_HATE_SPEECH": "BLOCK_NONE",
+        "HARM_CATEGORY_SEXUALLY_EXPLICIT": "BLOCK_NONE",
+        "HARM_CATEGORY_DANGEROUS_CONTENT": "BLOCK_NONE",
+    }
+
+    model = genai.GenerativeModel('gemini-pro', generation_config=generation_config, safety_settings=safety_settings)
+    chat = model.start_chat(history=history)
+
+    return chat
+
+
 #vvv=====SUBPROCESS=====vvv
 
 def sendInput(process, input):
@@ -215,13 +301,57 @@ def sendInput(process, input):
 def processOutput(process, output):
     global lastFailsafeTrigger
     global latestFailsafeTriggers
-    global noOutputTimeout
+    global latestOutput
+    global messageHistory
+    global currentChat
+    global accusingPlayer
+    global lastChat
+
     print("[STDOUT]", output)
-    noOutputTimeout = getTime()
+    latestOutput = getTime()
     #processed_output = rmAnsi(output)
     addLine(output)
     if "Out of sync" in output:
         sendWebhook("Sync Detection", f"Out of Sync.", 16277083)
+    if currentChat:
+        if accusingPlayer in output:
+            print(messageHistory)
+
+            processed_output = rmAnsi(output)
+            message = processed_output.split(": ")[1]
+            airespond_webhook(f"{accusingPlayer}: {message}")
+            lastChat = getTime()
+            if currentChat:
+                hitMaxResponses = len(messageHistory)/2 >= aiRespond_maxResponses
+                if not hitMaxResponses:
+                    response = currentChat.send_message(message)
+                    airespond_webhook(f"You: {response}")
+                    if "NONE" not in response:
+                        response = response.text.lower()
+                        messageHistory.append(accusingPlayer+":"+message)
+                        messageHistory.append("You:"+response)
+                        time.sleep(aiRespond_timeBeforePause)
+                        sendInput(process, "pause")
+                        time.sleep(len(str(response))*aiRespond_cps)
+                        sendInput(process, f"chat {response}")
+                        time.sleep(aiRespond_timeBeforeResume)
+                        sendInput(process, "resume")
+                elif hitMaxResponses:
+                    if aiRespond_ignoreAfterRespond:
+                        sendInput(process, f"chat /ignore {accusingPlayer}")
+                    if aiRespond_switchAfterRespond:
+                        while True:
+                            sendInput(process, "chat /hub")
+                            time.sleep(1.5)
+                            if '"map":"Hub"' in "".join(latestOutputLines[-10:]) or 'Warping...' in "".join(latestOutputLines[-10:]) or 'Sending to server' in "".join(latestOutputLines[-10:]):
+                                print("[failsafe] hubbed")
+                                chatLog = "\n".join(messageHistory)
+                                sendWebhook("Mention Handler", f"Successfully handled player {accusingPlayer}\n{chatLog}", 2752256)
+                                sendInput(process, "resume")
+                                currentChat = None
+                                accusingPlayer = None
+                                break
+
     for error in errorMessages:
         if error in output:
             outputPane = '\n'.join(latestOutputLines)
@@ -241,11 +371,13 @@ def processOutput(process, output):
             sendWebhook("Error Handler", f"Successfully restarted bot.", 2752256)
 
 def readSubprocess(process):
+    global currentChat
     while True:
         output = process.stdout.readline().decode().strip()
         if output:
             threading.Thread(target=processOutput, args=(process, output)).start()
-        if noOutputTimeout > config_noOutputTimeout:
+        if (getTime()-latestOutput) > config_noOutputTimeout and not output:
+            print("[DEBUG_NOT] KILLED")
             try:
                 killProcess(process.pid)
             except:
@@ -258,6 +390,23 @@ def readSubprocess(process):
                 process.terminate()
             except:
                 pass
+        if currentChat and not output:
+            if time.time()-lastChat > aiRespond_chatTimeout:
+                if aiRespond_ignoreAfterRespond:
+                    sendInput(process, f"chat /ignore {accusingPlayer}")
+                if aiRespond_switchAfterRespond:
+                    while True:
+                        sendInput(process, "chat /hub")
+                        time.sleep(1.5)
+                        if '"map":"Hub"' in "".join(latestOutputLines[-10:]) or 'Warping...' in "".join(latestOutputLines[-10:]) or 'Sending to server' in "".join(latestOutputLines[-10:]):
+                            print("[failsafe] hubbed")
+                            chatLog = "\n".join(messageHistory)
+                            sendWebhook("Mention Handler", f"Successfully handled player {accusingPlayer}\n{chatLog}", 2752256)
+                            sendInput(process, "resume")
+                            currentChat = None
+                            accusingPlayer = None
+                            break
+
         time.sleep(0.03)
 
 def sendUserInput(process):
@@ -279,10 +428,10 @@ def limit_remote_addr():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     global process
-
     global lastEyeTimestamp
     global totalEyes
-
+    global accusingPlayer
+    global currentChat
     global lastFailsafeTrigger
 
     data = request.json
@@ -298,39 +447,95 @@ def webhook():
         lastEyeTimestamp = getTime()
         totalEyes += 1
 
-    if "Mention Detected" in webhookTitle and failsafe_OnMention:
-        detectedPlayer = sanitizePlayer(webhookMessage)
-        lastFailsafeTrigger = getTime()
-        latestFailsafeTriggers.append(("Mentioned", getTime()))
-        sendInput(process, "pause")
-        time.sleep(1)
-        sendInput(process, f"chat /ignore add {detectedPlayer}")
-        time.sleep(1)
-        while True:
-            sendInput(process, "chat /hub")
-            time.sleep(1.5)
-            if '"map":"Hub"' in "".join(latestOutputLines[-10:]) or 'Warping...' in "".join(latestOutputLines[-10:]) or 'Sending to server' in "".join(latestOutputLines[-10:]):
-                print("[failsafe] hubbed")
-                sendWebhook("Mention Handler", f"Successfully handled player {detectedPlayer}", 2752256)
-                sendInput(process, "resume")
-                break
+    if "Mention Detected" in webhookTitle:
+        if aiRespond_isEnabled:
+            print("[AIRESPOND] aiRespond_isEnabled")
+            if not currentChat:
+                detectedPlayer = sanitizePlayer(webhookMessage)
+                detectedMessage = webhookMessage.split("`")[1].split("`")[0]
+                airespond_webhook(f"{detectedPlayer}: {detectedMessage}")
+                print("[AIRESPOND] detectedPlayer")
+                accusingPlayer = detectedPlayer
+                lastFailsafeTrigger = getTime()
+                latestFailsafeTriggers.append(("Mentioned", getTime()))
 
-    if "Macro Accusation Detected" in webhookTitle and failsafe_OnAccuse:
-        detectedPlayer = sanitizePlayer(webhookMessage)
-        lastFailsafeTrigger = getTime()
-        latestFailsafeTriggers.append(("Accused", getTime()))
-        sendInput(process, "pause")
-        time.sleep(1)
-        sendInput(process, f"chat /ignore add {detectedPlayer}")
-        time.sleep(1)
-        while True:
-            sendInput(process, "chat /hub")
-            time.sleep(5)
-            if '"map":"Hub"' in "".join(latestOutputLines[-10:]) or 'Warping...' in "".join(latestOutputLines[-10:]) or 'Sending to server' in "".join(latestOutputLines[-10:]):
-                print("[failsafe] hubbed")
-                sendWebhook("Mention Handler", f"Successfully handled player {detectedPlayer}", 2752256)
+                currentChat = generateChat()
+                
+                print("[AIRESPOND] generateChat")
+                response = currentChat.send_message(detectedMessage)
+                airespond_webhook(f"you: {response.text}")
+                print("[AIRESPOND] send_message")
+                response = response.text.lower()
+                messageHistory.append(accusingPlayer+":"+detectedMessage)
+                messageHistory.append("You:"+response)
+                time.sleep(aiRespond_timeBeforePause)
+                sendInput(process, "pause")
+                time.sleep(len(str(response))*aiRespond_cps)
+                sendInput(process, f"chat {response}")
+                time.sleep(aiRespond_timeBeforeResume)
                 sendInput(process, "resume")
-                break
+
+        if not aiRespond_isEnabled and failsafe_OnMention:
+            detectedPlayer = sanitizePlayer(webhookMessage)
+            lastFailsafeTrigger = getTime()
+            latestFailsafeTriggers.append(("Mentioned", getTime()))
+            sendInput(process, "pause")
+            time.sleep(1)
+            sendInput(process, f"chat /ignore add {detectedPlayer}")
+            time.sleep(1)
+            while True:
+                sendInput(process, "chat /hub")
+                time.sleep(1.5)
+                if '"map":"Hub"' in "".join(latestOutputLines[-10:]) or 'Warping...' in "".join(latestOutputLines[-10:]) or 'Sending to server' in "".join(latestOutputLines[-10:]):
+                    print("[failsafe] hubbed")
+                    sendWebhook("Mention Handler", f"Successfully handled player {detectedPlayer}", 2752256)
+                    sendInput(process, "resume")
+                    break
+
+    if "Macro Accusation Detected" in webhookTitle:
+        if aiRespond_isEnabled:
+            print("[AIRESPOND] aiRespond_isEnabled")
+            if not currentChat:
+                detectedPlayer = sanitizePlayer(webhookMessage)
+                detectedMessage = webhookMessage.split("`")[1].split("`")[0]
+                airespond_webhook(f"{detectedPlayer}: {detectedMessage}")
+                print("[AIRESPOND] detectedPlayer")
+                accusingPlayer = detectedPlayer
+                lastFailsafeTrigger = getTime()
+                latestFailsafeTriggers.append(("Accused", getTime()))
+
+                currentChat = generateChat()
+                
+                print("[AIRESPOND] generateChat")
+                response = currentChat.send_message(detectedMessage)
+                airespond_webhook(f"you: {response.text}")
+                print("[AIRESPOND] send_message")
+                response = response.text.lower()
+                messageHistory.append(accusingPlayer+":"+detectedMessage)
+                messageHistory.append("You:"+response)
+                time.sleep(aiRespond_timeBeforePause)
+                sendInput(process, "pause")
+                time.sleep(len(str(response))*aiRespond_cps)
+                sendInput(process, f"chat {response}")
+                time.sleep(aiRespond_timeBeforeResume)
+                sendInput(process, "resume")
+
+        if not aiRespond_isEnabled and failsafe_OnAccuse:
+            detectedPlayer = sanitizePlayer(webhookMessage)
+            lastFailsafeTrigger = getTime()
+            latestFailsafeTriggers.append(("Accused", getTime()))
+            sendInput(process, "pause")
+            time.sleep(1)
+            sendInput(process, f"chat /ignore add {detectedPlayer}")
+            time.sleep(1)
+            while True:
+                sendInput(process, "chat /hub")
+                time.sleep(5)
+                if '"map":"Hub"' in "".join(latestOutputLines[-10:]) or 'Warping...' in "".join(latestOutputLines[-10:]) or 'Sending to server' in "".join(latestOutputLines[-10:]):
+                    print("[failsafe] hubbed")
+                    sendWebhook("Mention Handler", f"Successfully handled player {detectedPlayer}", 2752256)
+                    sendInput(process, "resume")
+                    break
 
     if "Player Following" in webhookTitle and failsafe_OnFollow:
         if sanitizeTime(webhookMessage) >= failsafe_OnFollowTime:
