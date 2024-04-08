@@ -48,9 +48,9 @@ I haven't gotten any questions yet.
 - **Status Updates:** Periodic updates on runner's activity.
 - **Hide Username Option:** Prioritize privacy with an option to conceal your username.
 
-![320315587-5c30109a-aacd-4d0a-92c2-5fb7488990b7](https://github.com/retcoob/BMAddons/assets/166263898/aeea5bfc-e59a-421a-8d6f-3010ab52d0ea)
-![320315609-cc470c94-e9e4-48db-afb0-3665ea4812d0](https://github.com/retcoob/BMAddons/assets/166263898/440ca379-0392-4cc3-b124-57b79c9b0671)
-![320315671-61a9efff-118c-4cd4-aede-a15876243790](https://github.com/retcoob/BMAddons/assets/166263898/7064d10c-3dca-486f-bd84-7016fe0d19aa)
+![320315587-5c30109a-aacd-4d0a-92c2-5fb7488990b7](https://github.com/retcoob/BMAddons/assets/166263898/aeea5bfc-e59a-421a-8d6f-3010ab52d0ea)\
+![320315609-cc470c94-e9e4-48db-afb0-3665ea4812d0](https://github.com/retcoob/BMAddons/assets/166263898/440ca379-0392-4cc3-b124-57b79c9b0671)\
+![320315671-61a9efff-118c-4cd4-aede-a15876243790](https://github.com/retcoob/BMAddons/assets/166263898/7064d10c-3dca-486f-bd84-7016fe0d19aa)\
 ![320315713-36c85ffa-2b89-487c-88bf-5b0c1e1693bb](https://github.com/retcoob/BMAddons/assets/166263898/46dec70d-9e6b-41f7-9358-78767043defa)
 
 
@@ -128,17 +128,17 @@ I haven't gotten any questions yet.
   - `all restart`: Restarts all connected runners.
   - `all status update`: Provides a quick overview of all runner statuses.
 
-![320315914-5cf20d67-7636-4891-a2c1-9150e95d4f9c](https://github.com/retcoob/BMAddons/assets/166263898/e9ad34f8-1fd9-470f-9503-4fb7648317d7)
-![320316148-7e865a98-82c1-4e61-98d8-cdc2fe3ee8c6](https://github.com/retcoob/BMAddons/assets/166263898/16b7bba6-d83f-490e-b480-838a855e84ae)
-![320316087-1589069e-fded-45a4-a845-45e6c943e2c5](https://github.com/retcoob/BMAddons/assets/166263898/ae324d1c-3e51-4f8f-a250-9efaa82d7102)
+![320315914-5cf20d67-7636-4891-a2c1-9150e95d4f9c](https://github.com/retcoob/BMAddons/assets/166263898/e9ad34f8-1fd9-470f-9503-4fb7648317d7)\
+![320316148-7e865a98-82c1-4e61-98d8-cdc2fe3ee8c6](https://github.com/retcoob/BMAddons/assets/166263898/16b7bba6-d83f-490e-b480-838a855e84ae)\
+![320316087-1589069e-fded-45a4-a845-45e6c943e2c5](https://github.com/retcoob/BMAddons/assets/166263898/ae324d1c-3e51-4f8f-a250-9efaa82d7102)\
 ![320315982-9a3cb793-8a49-4fec-99fe-465cb060960d](https://github.com/retcoob/BMAddons/assets/166263898/197a245e-817d-49e0-80d2-959df3a1364b)
 
 
 - **Individual Runner Commands:**
   - Start, stop, restart, trigger failsafe, send message.
 
-![320316202-d0bd9e7e-c3b4-4c98-826f-71d442a94b6c](https://github.com/retcoob/BMAddons/assets/166263898/5b20fe59-dbc4-4392-b608-7af0afcb1b60)
-![320316211-8e09f3f7-9b62-435f-af7a-10971a359c4b](https://github.com/retcoob/BMAddons/assets/166263898/71d85e6c-5e9b-4f9e-a2d2-842094c46dee)
+![320316202-d0bd9e7e-c3b4-4c98-826f-71d442a94b6c](https://github.com/retcoob/BMAddons/assets/166263898/5b20fe59-dbc4-4392-b608-7af0afcb1b60)\
+![320316211-8e09f3f7-9b62-435f-af7a-10971a359c4b](https://github.com/retcoob/BMAddons/assets/166263898/71d85e6c-5e9b-4f9e-a2d2-842094c46dee)\
 ![320316236-c3777cc2-9477-4620-94b8-c4eeb6f18a15](https://github.com/retcoob/BMAddons/assets/166263898/01a308a8-aeb3-48ea-b3da-65fa301b1502)
 
 - **Configuration Commands:**
