@@ -2,7 +2,7 @@
 Follow these steps in order if you don't know how to set this up.
 
 ## Downloading 
-Head to the `dev` branch's actions, found [here](https://github.com/retcoob/BMAddons/actions) and download the latest successful action.\
+Head to the releases page, found [here](https://github.com/retcoob/BMAddons/releases) and download the latest successful action.\
 Next, download the appropriate operating system build.\
 I'm currently on Windows but most steps will be similar on every OS.
 
@@ -41,6 +41,12 @@ Create a webhook in both channels and keep them somewhere safe.\
 This will be needed in the next step.
 
 ## Runner Configuration
+
+**NOTE: It is currently advised that you `DISABLE` the aiRespond section.\
+It is currently being worked on and requires further testing.**
+
+<details><summary>Self Config</summary>
+
 Upon running the executable, you should get something like:\
 ```? No config file detected! Would you like to run self-setup? (y/N)```\
 If you don't see this, try deleting your current config.
@@ -83,6 +89,59 @@ Now enter your Discord ID:\
 This will be used to ping you.
 
 You can now edit the config file and adjust `pings` and `failsafe`.
+
+</details><br>
+
+<details><summary>Manual Config</summary>
+
+Upon downloading the config file place it in the same folder:\
+You can find all configs in the config folder.
+
+### statusUpdate
+Now is the time to use the webhook you saved for `username-status`.\
+The Self Config section does this automatically. If you're looking for that go there.\
+Go to [Discohook](https://disohook.org). Send a message, and copy the message's ID.\
+Add it to the end of your URL.
+For example, if your webhook is\
+```https://discord.com/api/webhooks/1234567890987654321/abcdefghi-abcdefghi-v-abcdefghi-abcdefghi-abcdefghi` add `/messages/1234567890987654321```\
+Which should now look like:\
+```https://discord.com/api/webhooks/1234567890987654321/abcdefghi-abcdefghi-v-abcdefghi-abcdefghi-abcdefghi/messages/1234567890987654321```\
+Put this new webhook into your `bma_config.json` file under "general", "statusUpdate".
+
+### webhookURL
+Then, you will have to enter the `username-webhook` that you have also saved earlier.\
+Put this webhook under "general", "webhookURL".
+
+### runCommand
+Find the command you use to run BinMaster.\
+In most cases, it is either `binmaster-slayer-win.exe` or `./binmaster-slayer-linux.bin`. But you should know this.\
+Put this under "general", "runCommand"
+
+### flaskPort
+Enter a memorable number as you will need this later.\
+For example, mine is set as 8000. You may use this port as well.
+Put this webhook under "security", "flaskPort".
+
+### socketIOPort
+Open your `config.json` (for BinMaster) and enter the `webpage_port`.\
+For example, mine is set as 1550. You may use this port as well.\
+Put this under "security", "socketIOPort"
+
+Now, create a password!\
+This password will be used to authenticate the controller to the server.
+Put this under "security", "password"
+
+Change your `webhook_url` in your **BinMaster** config to:\
+```http://127.0.0.1:8000/webhook```\
+Note: put this string literally.
+
+Now enter your Discord ID:\
+```? Enter your Discord ID:```\
+This will be used to ping you.
+
+You can now edit the config file and adjust `pings` and `failsafe`.
+
+</details><br>
 
 ## Controller Configuration
 Create an application at [Discord Developer Portal](https://discord.com/developers/applications), and invite the bot to your private server.\

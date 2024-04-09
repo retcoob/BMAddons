@@ -1,4 +1,10 @@
-## Welcome to the dev branch!
+# BMAddons
 
-I test stuff here before commiting to thee main branch.\
-This can be considered a pre-release I guess.
+ ### [Setup](docs/setup.md)
+ ### [Features](docs/features.md)
+ ### [Compile/Install](docs/compile.md)
+ ### [Config Documentation](docs/config.md)
+
+# Showcase
+
+![image](docs/assets/bmastatus.png)
