@@ -9,7 +9,7 @@ I'm currently on Windows but most steps will be similar on every OS.
 ## Anti-Virus
 If you have an anti-virus installed, in most cases they flag it.\
 This is a false positive and the packaging library I use just flags anti-viruses.\
-If you cannot or don't want to use pre-compiled executeables for one reason or another, head to the [self-compile documentation](https://github.com/retcoob/BMAddons/docs/compile.md).\
+If you cannot or don't want to use pre-compiled executeables for one reason or another, head to the [self-compile documentation](compile.md).\
 After self-compiling, you may come back here to complete the guide.
 
 ## Extraction
@@ -43,7 +43,7 @@ This will be needed in the next step.
 ## Runner Configuration
 Upon running the executable, you should get something like:\
 ```? No config file detected! Would you like to run self-setup? (y/N)```\
-If you don't see this, or want to manually setup your config, read Manual Config below.
+If you don't see this, try deleting your current config.
 
 Next, you will see:\
 ```? Please enter the webhook you would like to use for status updates:```\
