@@ -8,10 +8,6 @@
   *  [Failsafe Features](#failsafe-features)
   *  [Controller Features](#controller-features)
   *  [Commands Overview](#commands-overview)
-* [Self-Install](#Self-Install)
-* [Self-Compile](#Self-Compile)
-* [Usage](#Usage)
-* [Configuration](#Configuration)
 
 ## Features
 
@@ -123,27 +119,3 @@
   - `toggle logging`: Enable or disable logging.
 
 ![320316253-08c1f0cd-c3e8-4353-bd17-a04001145f8e](https://github.com/retcoob/BMAddons/assets/166263898/62e49e2d-9705-450f-85d5-d4436dd142a1)
-
-## Self-Install
-1. Install python3/pip3
-2. `pip3 install "discord.py" "python-socketio[client]" colorama requests psutil flask`
-3. Run `python3 runner.py`
-## Self-Compile
-1. Download python3/pip3
-2. `pip3 install "discord.py" "python-socketio[client]" colorama requests psutil flask nuitka`
-3. `python3 -m nuitka --onefile runner.py`
-4. Wait for compile
-5. `chmod +x runner.bin`
-6. `./runner.bin`\
-Compiling may improve resource usage!
-## Usage
-1. Modify your `webpage_port` to whatever you have in your bma_config `socketIOPort`
-2. Make sure the password on your `bma_config.json` is **NOT** the default.
-3. Change the password to whatever you'd like and remember the password must reflect correctly on the controller's config as well for it to work. Failure to do this **WILL** cause errors.
-4. Be sure to `ufw allow <port>`
-5. `chmox +x runner.bin`
-6. `./runner.bin`
-## Configuration
-If you run all accounts on VPS, run the controller on your (or one of your) VPS as well.\
-If you run all accounts locally, run the controller locally.\
-If you run some accounts locally and some accounts on VPS, run controller locally.
