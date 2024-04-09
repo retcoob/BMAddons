@@ -72,7 +72,7 @@ default_config = {
 
 if not os.path.isfile("bma_config.json"):
     with open("bma_config.json", "w+") as f:
-        currentConfig = json.loads(default_config)
+        currentConfig = default_config
         selfsetup = inquirer.confirm(message="No config file detected! Would you like to run self-setup?",).execute()
         print(selfsetup)
         if selfsetup:
