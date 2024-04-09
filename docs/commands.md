@@ -26,5 +26,5 @@ Required:
 Required:
  - server option - a selected server option is required to run this command
 
-`/config togglelogging` - Toggles logging for the status webhook. This can be used to hide a username, or if the logging is too bulky, this can also be used.
+`/config togglelogging` - Toggles logging for the status webhook. This can be used to hide a username, or if the logging is too bulky, this can also be used.\
 `/config togglehiddenusername` - This hides your username from most instances of embeds/messages. Great for using in screenshots as the aesthetic of the embed remains the same.
