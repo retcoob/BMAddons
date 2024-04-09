@@ -14,7 +14,7 @@ After self-compiling, you may come back here to complete the guide.
 
 ## Extraction
 Extract the `runner.exe`/`runner.bin` file into the same folder as your `binmaster-slayer` executable.\
-It should look something like this:
+It should look something like this:\
 ![alt text](assets/bmfolder.png)
 
 ## Discord Server Setup
