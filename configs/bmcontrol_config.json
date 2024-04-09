@@ -1,0 +1,8 @@
+{
+    "botToken": "yourToken",
+    "ownerIDs": [123, 456],
+    "guildID": 1234,
+    "servers": [
+        ["127.0.0.1:8000", "servername1", "password"]
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "general":{
+        "statusUpdate": "",
+        "statusUpdateDelay": 5,
+        "webhookURL": "",
+        "runCommand": "",
+        "bazaarUpdateTime": 120,
+        "enableLogging": true,
+        "hiddenUsername": false,
+        "noOutputTimeout": 120,
+        "restartMessages": ["client timed out after 30000 milliseconds", "Possible stall detected"]
+    },
+    "security":{
+        "whitelistedIPs": ["127.0.0.1"],
+        "flaskPort": 8000,
+        "socketIOPort": 1550,
+        "password": "youpassword"
+    },
+    "pings": {
+        "pingID": 123456,
+        "pingOnMention": false,
+        "pingOnAccuse": false,
+        "pingOnFollow": false,
+        "pingOnSpectating": false,
+        "pingOnStaffCheck": false
+    },
+    "failsafe": {
+        "OnMention": true,
+        "OnAccuse": true,
+        "OnFollow": false,
+        "OnSpectating": false,
+        "OnStaffCheck": false,
+        "OnFollowTime": 60,
+        "OnSpectateTime": 60
+    },
+    "aiRespond": {
+        "isEnabled": false,
+        "apiKey": "",
+        "OnMention": true,
+        "OnAccuse": true,
+        "prompt": "",
+        "timeBeforePause": 4,
+        "timeBeforeResume": 2,
+        "typingWPM": 50,
+        "maxResponses": 5,
+        "switchAfterRespond": true,
+        "ignoreAfterRespond": true,
+        "chatTimeout": 30
+    }
+}

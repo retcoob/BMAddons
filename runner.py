@@ -16,6 +16,7 @@ import os
 from urllib.parse import unquote, quote_plus
 from InquirerPy import inquirer
 import google.generativeai as genai
+import sys
 
 init(convert=True)
 
@@ -94,10 +95,9 @@ if not os.path.isfile("bma_config.json"):
             json.dump(currentConfig, f, indent=4)
 
             inquirer.select(message="The bare minimum required to config is completed. Please read 'bma_config.json' to adjust 'pings' and 'failsafe'", choices=['Exit']).execute()
-            exit(0)
-
+            sys.exit(0)
         elif not selfsetup:
-            exit(0)
+            sys.exit(0)
 
 #vvv=====CONFIG=====vvv
 
