@@ -578,6 +578,7 @@ def webhook():
 
 
 
+    # im lazy ok?
     if "Mention Detected" in webhookTitle and ping_OnMention:
         webhookMessage += f"\n<@{pingID}>"
 
@@ -594,7 +595,10 @@ def webhook():
         webhookMessage += f"\n<@{pingID}>"
 
     lastOutput = rmAnsi("\n".join(latestOutputLines[-10:]))
-    description = webhookMessage + f'\n\nstdout:```{lastOutput}```'
+    if config_enableLogging:
+        description = webhookMessage + f'\n\nstdout:```{lastOutput}```'
+    elif not config_enableLogging:
+        description = webhookMessage
     sendWebhook(webhookTitle, description, webhookColor)
     #print("[FLASK]", webhookMessage)
     return "200"
