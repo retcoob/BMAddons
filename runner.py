@@ -594,7 +594,7 @@ def webhook():
     if "Staff Check" in webhookTitle and ping_OnStaffCheck:
         webhookMessage += f"\n<@{pingID}>"
 
-    lastOutput = rmAnsi("\n".join(latestOutputLines[-10:]))
+    lastOutput = rmAnsi("\n".join(latestOutputLines[-25:]))
     if config_enableLogging:
         description = webhookMessage + f'\n\nstdout:```{lastOutput}```'
     elif not config_enableLogging:
