@@ -774,7 +774,7 @@ def updateWebhook():
     while True:
         if isRunning == True:
             try:
-                loggingData = rmAnsi("\n".join(latestOutputLines[-10:]))
+                loggingData = rmAnsi("\n".join(latestOutputLines[-25:]))
 
                 if not lastFailsafeTrigger:
                     lastFailsafeTriggerMessage = "None"
